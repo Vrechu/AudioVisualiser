@@ -26,21 +26,25 @@ public class AudioScript : MonoBehaviour
 
     private void Start()
     {
-        spectrum = new float[bandMix.SpectrumRange];
         source = gameObject.GetComponent<AudioSource>();
+        source.clip = bandMix.AudioClip;
+        spectrum = new float[bandMix.SpectrumRange];
+
         Debug.Log("frequency: " + source.clip.frequency);
         CalculateComponents();
+
+        source.Play();
     }
 
     private void CalculateComponents()
     {
-        float songFrequencyStep = bandMix.SpectrumRange / (float)source.clip.frequency;
+        float songFrequencyStep = bandMix.SpectrumRange / (float)bandMix.AudioClip.frequency;
         Debug.Log($"step size: {songFrequencyStep}");
-        bandBorders = new int[bandMix.InputBandRanges.Length];
+        bandBorders = new int[bandMix.BandRanges().Length];
 
         for (int i = 0; i < bandBorders.Length; i++)
         {
-            bandBorders[i] = (int)(bandMix.InputBandRanges[i] * songFrequencyStep);
+            bandBorders[i] = (int)(bandMix.BandRanges()[i] * songFrequencyStep);
         }
 
         bandBuffers = new float[bandBorders.Length + 1];
@@ -128,8 +132,7 @@ public class AudioScript : MonoBehaviour
             else
             {
                 bandBuffers[i] -= bufferDecreases[i] * Time.deltaTime;
-                bufferDecreases[i] *=  1 + (bufferDecreaseScale * Time.deltaTime);
-                
+                bufferDecreases[i] *=  1 + (bufferDecreaseScale * Time.deltaTime);                
             }
         }
     }
