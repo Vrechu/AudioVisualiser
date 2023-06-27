@@ -6,7 +6,8 @@ public class CreateBoxVisualiser : MonoBehaviour
 {
     [SerializeField] private GameObject boxPrefab;
     [SerializeField] private float scaleIntensity;
-    [SerializeField] private float size = 10;
+    [SerializeField] private float length = 10;
+    [SerializeField] private float baseSize = 0.1f;
     [SerializeField] private float spacing = 0.5f;
 
     private float stepSize;
@@ -39,9 +40,9 @@ public class CreateBoxVisualiser : MonoBehaviour
 
     private void CalculateStepsAndSize(int pBoxAmount)
     {
-        spacing = Mathf.Clamp(spacing, 0, size / (pBoxAmount - 1));
+        spacing = Mathf.Clamp(spacing, 0, length / (pBoxAmount - 1));
         float TotalSpacing = spacing * (pBoxAmount - 1);
-        boxSize = (size - TotalSpacing) / pBoxAmount;
+        boxSize = (length - TotalSpacing) / pBoxAmount;
         stepSize = boxSize + spacing;
     }
 
@@ -76,13 +77,13 @@ public class CreateBoxVisualiser : MonoBehaviour
 
         for (int i = 0; i < boxes.Length; i++)
         {
-            if (pBandValues[i] > 0) boxes[i].transform.localScale = new Vector3(boxSize, scaleIntensity * pBandValues[i], 1);
-            else boxes[i].transform.localScale = new Vector3(boxSize, 0, 1);
+            if (pBandValues[i] > 0) boxes[i].transform.localScale = new Vector3(boxSize, baseSize +scaleIntensity * pBandValues[i], 1);
+            else boxes[i].transform.localScale = new Vector3(boxSize, baseSize, 1);
         }
     }
 
     private void centerPosition()
     {
-        transform.position = new Vector3(-size / 2 + boxSize / 2, 0, 0);
+        transform.position = new Vector3(-length / 2 + boxSize / 2, 0, 0);
     }
 }
