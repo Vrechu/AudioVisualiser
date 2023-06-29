@@ -27,7 +27,7 @@ public class CreateBoxVisualiser : MonoBehaviour
         AudioScript.OnAudioUpdate -= onAudioUpdate;
     }
 
-    private void onAudioUpdate(float[] pBandValues)
+    private void onAudioUpdate(float[] pBandValues, float pTime)
     {
         CalculateStepsAndSize(pBandValues.Length);
 

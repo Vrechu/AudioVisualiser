@@ -22,18 +22,26 @@ public class AudioScript : MonoBehaviour
     private float[] bandBuffers;
     private float[] bufferDecreases;
 
-    public static event Action<float[]> OnAudioUpdate;
+    public static event Action<float[], float> OnAudioUpdate;
+    public static event Action<string, float, float> OnNewClipLoaded;
 
     private void Start()
     {
+        UIFunctions.OnPlayOrPause += playOrPause;
+        UIFunctions.OnTimeSet += setTime;
+
         source = gameObject.GetComponent<AudioSource>();
         source.clip = bandMix.AudioClip;
         spectrum = new float[bandMix.SpectrumRange];
 
-        Debug.Log("frequency: " + source.clip.frequency);
+        OnNewClipLoaded?.Invoke(source.clip.name, source.clip.length, source.clip.frequency);
         CalculateComponents();
+    }
 
-        source.Play();
+    private void OnDestroy()
+    {
+        UIFunctions.OnPlayOrPause -= playOrPause;
+        UIFunctions.OnTimeSet -= setTime;
     }
 
     private void CalculateComponents()
@@ -61,7 +69,8 @@ public class AudioScript : MonoBehaviour
 
         SetBandBuffer();
         if (useBuffer) bands = bandBuffers;
-        OnAudioUpdate?.Invoke(bands);
+
+        if (source.isPlaying) OnAudioUpdate?.Invoke(bands, source.time);
     }
 
     private float[] GetBandAverages()
@@ -136,4 +145,16 @@ public class AudioScript : MonoBehaviour
             }
         }
     }
+
+    private void playOrPause(bool pIsPlay)
+    {
+        if (pIsPlay) source.Play();
+        else source.Pause();
+    }
+
+    private void setTime(float pTime)
+    {
+        source.time = pTime;
+    }
+
 }
