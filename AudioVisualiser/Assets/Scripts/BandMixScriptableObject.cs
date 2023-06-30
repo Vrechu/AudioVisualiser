@@ -14,11 +14,13 @@ public class BandMixScriptableObject : ScriptableObject
     private int[] inputBandRanges = new int[7];
 
 
+
     [SerializeField] private bool useAutomaticBandRanges;
     [SerializeField] private uint bandAmount;
     [SerializeField] private uint division;
 
-    [SerializeField] private bool spreadCenter = false;
+    [SerializeField] private Vector2Int[] subdivideBands; 
+    [SerializeField] private bool autoSubdivide = false;
     [SerializeField] private int center = 2;
     [SerializeField] private int centerMultiplier = 3;
 
@@ -28,7 +30,8 @@ public class BandMixScriptableObject : ScriptableObject
         if (useAutomaticBandRanges) bandRanges = automaticBandRanges();
         else bandRanges = inputBandRanges;
 
-        if (spreadCenter) SubdivideBands();
+        if (autoSubdivide) bandRanges = autoSubdivideBands();
+        else bandRanges = manualSubdivideBands();
 
         return bandRanges;
     }
@@ -46,43 +49,69 @@ public class BandMixScriptableObject : ScriptableObject
         return bands;
     }
 
+    private int[] manualSubdivideBands()
+    {
+        int[] subdivisionPerBand = new int[bandRanges.Length];
+        int newBandAmount = bandRanges.Length;
 
+        for (int i = 0; i < bandRanges.Length; i++)
+        {
+            subdivisionPerBand[i] = 1;
 
-    private void SubdivideBands()
+            for (int j = 0; j < subdivideBands.Length; j++)
+            {
+                if (i == subdivideBands[j].x)
+                {
+                    subdivisionPerBand[i] = subdivideBands[j].y;
+                    newBandAmount += subdivideBands[j].y - 1;
+                    break;
+                }
+            }
+        }
+
+        return subdividedBands(bandRanges, subdivisionPerBand, newBandAmount);
+    }
+
+    private int[] autoSubdivideBands()
     {
         int[] bands = bandRanges;
-        int[] bandAmounts = new int[bands.Length];
+        int[] subdivisionPerBand = new int[bands.Length];
         int newBandAmount = 0;
 
         for (int i = 0; i < bands.Length; i++)
         {
-            int amount = centerMultiplier - (int)Mathf.Sqrt(Mathf.Pow(i - center, 2));
-            if (amount < 1) amount = 1;
-            newBandAmount += amount;
-            bandAmounts[i] = amount;
+            int subdivisionAmount = centerMultiplier - 
+                (int)Mathf.Sqrt(Mathf.Pow(i - center, 2));
+
+            if (subdivisionAmount < 1) subdivisionAmount = 1;
+
+            subdivisionPerBand[i] = subdivisionAmount;
+            newBandAmount += subdivisionAmount;
         }
 
-        int[] newBands = new int[newBandAmount];
+        return subdividedBands(bands, subdivisionPerBand, newBandAmount);
+    }
+
+    private int[] subdividedBands(int[] pBandToSubdivide, int[] pSubdivisionsPerband, int pNewBandsLength)
+    {
+        int[] newBands = new int[pNewBandsLength];
         int counter = 0;
         int previousBand = 0;
 
-
-        for (int i = 0; i < bandAmounts.Length; i++)
+        for (int i = 0; i < pSubdivisionsPerband.Length; i++)
         {
-            for (int j = 0; j < bandAmounts[i]; j++)
+            int dividedBandwith = (pBandToSubdivide[i] - previousBand) / pSubdivisionsPerband[i];
+
+            for (int j = 0; j < pSubdivisionsPerband[i]; j++)
             {
-                newBands[counter] =
-                    (bands[i] - previousBand)
-                    / bandAmounts[i]
-                    * (j + 1)
-                    + previousBand;
+                newBands[counter] = dividedBandwith * (j + 1) + previousBand;
 
                 counter++;
             }
 
-            previousBand = bands[i];
+            previousBand = pBandToSubdivide[i];
         }
 
-        bandRanges = newBands;
+        return newBands;
     }
 }
