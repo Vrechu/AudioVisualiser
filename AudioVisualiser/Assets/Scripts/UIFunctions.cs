@@ -23,7 +23,7 @@ public class UIFunctions : MonoBehaviour
     [SerializeField] private TextMeshProUGUI clipTime;
     [SerializeField] private TextMeshProUGUI clipMaxTime;
 
-    private void Start()
+    private void Awake()
     {
         PlayOrPause(false);
 
