@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c8a1420cd4d15b48a29fac67a38eadd, type: 3}
   m_Name: Cosmic_Ratio 1
   m_EditorClassIdentifier: 
-  SpectrumRange: 1024
+  SpectrumRange: 2048
   AudioClip: {fileID: 8300000, guid: f909e15197b252a43af8e500d8f3e572, type: 3}
-  inputBandRanges: 3c000000fa000000f4010000d0070000a00f000070170000204e0000
+  inputBandRanges: c80000002c010000204e0000
   useAutomaticBandRanges: 1
   bandAmount: 6
   division: 3
-  spreadCenter: 1
-  center: 2
+  subdivideBands: []
+  autoSubdivide: 1
+  subdivideCenter: 2
   centerMultiplier: 5
+  subdivideWidth: 2
+  subdivideFalloff: 0
