@@ -21,8 +21,10 @@ public class BandMixScriptableObject : ScriptableObject
 
     [SerializeField] private Vector2Int[] subdivideBands; 
     [SerializeField] private bool autoSubdivide = false;
-    [SerializeField] private int center = 2;
+    [SerializeField] private int subdivideCenter = 2;
     [SerializeField] private int centerMultiplier = 3;
+    [SerializeField] private int subdivideWidth = 2;
+    [SerializeField] private int subdivideFalloff = 1;
 
     public int[] BandRanges()
     {
@@ -80,11 +82,13 @@ public class BandMixScriptableObject : ScriptableObject
 
         for (int i = 0; i < bands.Length; i++)
         {
-            int subdivisionAmount = centerMultiplier - 
-                (int)Mathf.Sqrt(Mathf.Pow(i - center, 2));
-
-            if (subdivisionAmount < 1) subdivisionAmount = 1;
-
+            int subdivisionAmount = 1;
+            int distanceToCenter = (int)Mathf.Sqrt(Mathf.Pow(i - subdivideCenter, 2));
+            if (distanceToCenter <= (float)subdivideWidth)
+            {
+                subdivisionAmount = centerMultiplier - distanceToCenter * subdivideFalloff;
+                if (subdivisionAmount < 1) subdivisionAmount = 1;
+            }
             subdivisionPerBand[i] = subdivisionAmount;
             newBandAmount += subdivisionAmount;
         }

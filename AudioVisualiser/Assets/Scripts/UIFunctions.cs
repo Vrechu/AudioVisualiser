@@ -53,22 +53,22 @@ public class UIFunctions : MonoBehaviour
         paused = !pIsPlay;
     }
 
-    private void setTimer(float[] pStuff, float pTime)
+    private void setTimer(SpectrumInfo pSpectrumInfo)
     {
-        clipTime.text = ToMinuteFormat(pTime);
-        timer.value = pTime;
+        clipTime.text = toMinuteFormat(pSpectrumInfo.Time);
+        timer.value = pSpectrumInfo.Time;
     }
 
     private void setClipInfo(string pClipName, float pMaxTime, float pClipFrequency)
     {
         clipName.text = pClipName;
         ClipFrequency.text = $"{pClipFrequency} HZ";
-        clipMaxTime.text = ToMinuteFormat(pMaxTime);
+        clipMaxTime.text = toMinuteFormat(pMaxTime);
 
         timer.maxValue = pMaxTime;
     }
 
-    private string ToMinuteFormat(float pTimeInSeconds)
+    private string toMinuteFormat(float pTimeInSeconds)
     {
         int seconds = (int)pTimeInSeconds % 60;
         int minutes = ((int)pTimeInSeconds - seconds) / 60;
