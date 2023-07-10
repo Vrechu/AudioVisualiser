@@ -11,20 +11,23 @@ public class BandMixScriptableObject : ScriptableObject
 
     private int[] bandRanges;
 
-    [SerializeField]
-    private int[] inputBandRanges = new int[7];
+    public bool useAutomaticBandRanges;
 
-    [SerializeField] private bool useAutomaticBandRanges;
-    [SerializeField] private uint bandAmount;
-    [SerializeField] private uint division;
+    public uint bandAmount;
+    public uint division;
 
-    [SerializeField] private Vector2Int[] subdivideBands; 
-    [SerializeField] private bool autoSubdivide = false;
-    [SerializeField] private int subdivideCenter = 2;
-    [SerializeField] private int centerMultiplier = 3;
-    [SerializeField] private int subdivideWidth = 2;
-    [SerializeField] private int subdivideFalloff = 1;
+    public int[] inputBandRanges = new int[7];
 
+    public bool subdivide = false;
+
+    public bool autoSubdivide = false;
+
+    public int subdivideCenter = 2;
+    public int centerMultiplier = 3;
+    public int subdivideWidth = 2;
+    public int subdivideFalloff = 1;
+
+    public Vector2Int[] subdivideBands; 
 
     /// <summary>
     /// Calculates the band borders of the clip based on the audioclip frequency, band ranges, and spectrum range.
@@ -33,11 +36,11 @@ public class BandMixScriptableObject : ScriptableObject
     public int[] BandBorders()
     {
         float songFrequencyStep = SpectrumRange / (float)AudioClip.frequency;
-        int[] borders = new int[BandRanges().Length];
+        int[] borders = new int[processedBandRanges().Length];
 
         for (int i = 0; i < borders.Length; i++)
         {
-            borders[i] = (int)(BandRanges()[i] * songFrequencyStep);
+            borders[i] = (int)(processedBandRanges()[i] * songFrequencyStep);
         }
         return borders;
     }
@@ -46,10 +49,12 @@ public class BandMixScriptableObject : ScriptableObject
     /// Manages the band range calculations based on mix settings. 
     /// </summary>
     /// <returns></returns>
-    public int[] BandRanges()
+    private int[] processedBandRanges()
     {
         if (useAutomaticBandRanges) bandRanges = automaticBandRanges();
         else bandRanges = inputBandRanges;
+
+        if (!subdivide) return bandRanges;
 
         if (autoSubdivide) bandRanges = autoSubdivideBands();
         else bandRanges = manualSubdivideBands();
@@ -89,18 +94,17 @@ public class BandMixScriptableObject : ScriptableObject
         for (int i = 0; i < bandRanges.Length; i++)
         {
             subdivisionPerBand[i] = 1;
-
             for (int j = 0; j < subdivideBands.Length; j++)
             {
                 if (i == subdivideBands[j].x)
                 {
                     subdivisionPerBand[i] = subdivideBands[j].y;
+                    if (subdivideBands[j].y < 1) subdivideBands[j].y = 1;
                     newBandAmount += subdivideBands[j].y - 1;
                     break;
                 }
             }
         }
-
         return subdividedBands(bandRanges, subdivisionPerBand, newBandAmount);
     }
 
