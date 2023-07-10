@@ -5,6 +5,9 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Manages the on-screen UI elements.
+/// </summary>
 public class UIFunctions : MonoBehaviour
 {
     public static event Action<bool> OnPlayOrPause;
@@ -27,8 +30,8 @@ public class UIFunctions : MonoBehaviour
     {
         PlayOrPause(false);
 
-        AudioScript.OnNewClipLoaded += setClipInfo;
-        AudioScript.OnAudioUpdate += setTimer;
+        AudioSourceManager.OnNewClipLoaded += setClipInfo;
+        AudioSourceManager.OnAudioUpdate += setTimer;
         timer.onValueChanged.AddListener(delegate { setTimerManually(); });
     }
 
@@ -36,15 +39,15 @@ public class UIFunctions : MonoBehaviour
 
     private void OnDestroy()
     {
-        AudioScript.OnNewClipLoaded -= setClipInfo;
-        AudioScript.OnAudioUpdate -= setTimer;
+        AudioSourceManager.OnNewClipLoaded -= setClipInfo;
+        AudioSourceManager.OnAudioUpdate -= setTimer;
         timer.onValueChanged.RemoveListener(delegate { setTimerManually(); });
     }
 
     /// <summary>
-    /// Sets the ui and sends out pauseing/unpausing event.
+    /// Sets the ui and sends out pausing/unpausing event.
     /// </summary>
-    /// <param name="Set true if the function should play, false if the function should pause."></param>
+    /// <param name="pIsPlay">Set true if the function should play, false if the function should pause.</param>
     public void PlayOrPause(bool pIsPlay)
     {
         pauseButton.SetActive(pIsPlay);
@@ -53,12 +56,19 @@ public class UIFunctions : MonoBehaviour
         paused = !pIsPlay;
     }
 
+    /// <summary>
+    /// Sets the timer text UI to the clip playback time.
+    /// </summary>
+    /// <param name="pSpectrumInfo"></param>
     private void setTimer(SpectrumInfo pSpectrumInfo)
     {
         clipTime.text = toMinuteFormat(pSpectrumInfo.Time);
         timer.value = pSpectrumInfo.Time;
     }
 
+    /// <summary>
+    /// Sets the UI of the clip name, time length, and frequency.
+    /// </summary>
     private void setClipInfo(string pClipName, float pMaxTime, float pClipFrequency)
     {
         clipName.text = pClipName;
@@ -68,6 +78,8 @@ public class UIFunctions : MonoBehaviour
         timer.maxValue = pMaxTime;
     }
 
+    
+    /// <returns>A string of the given time in seconds in a minute format.</returns>
     private string toMinuteFormat(float pTimeInSeconds)
     {
         int seconds = (int)pTimeInSeconds % 60;

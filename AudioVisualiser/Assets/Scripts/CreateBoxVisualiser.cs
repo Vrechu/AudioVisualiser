@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Instantiates an array of boxes and scales them according to spectrum info.
+/// </summary>
 public class CreateBoxVisualiser : MonoBehaviour
 {
     [SerializeField] private GameObject boxPrefab;
@@ -17,7 +21,7 @@ public class CreateBoxVisualiser : MonoBehaviour
     private float[] bands;
     private float[] bandBuffers;
     private float[] bufferDecreases;
-    [SerializeField] private float bufferDecreaseBase = 0.0005f;
+    [SerializeField] private float bufferDecreaseBase = 0.5f;
     [SerializeField] private float bufferDecreaseScale = 1.2f;
 
 
@@ -26,17 +30,15 @@ public class CreateBoxVisualiser : MonoBehaviour
 
     private GameObject[] boxes;
 
-    
-
 
     private void Start()
     {
-        AudioScript.OnAudioUpdate += onAudioUpdate;
+        AudioSourceManager.OnAudioUpdate += onAudioUpdate;
     }
 
     private void OnDestroy()
     {
-        AudioScript.OnAudioUpdate -= onAudioUpdate;
+        AudioSourceManager.OnAudioUpdate -= onAudioUpdate;
     }
 
     private void onAudioUpdate(SpectrumInfo pSpectrumInfo)
@@ -50,10 +52,13 @@ public class CreateBoxVisualiser : MonoBehaviour
         calculateStepsAndSize(bands.Length);
         if (boxes == null) instantiateBoxes(bands);
 
-        positionBoxes(bands);
+        positionBoxes();
         scaleBoxes(bands);
     }
 
+    /// <summary>
+    /// Sets the band buffer to make allow smooth desceasing in scale.
+    /// </summary>
     private void setBandBuffer()
     {
         if (bandBuffers == null) bandBuffers = new float[bands.Length];
@@ -73,7 +78,11 @@ public class CreateBoxVisualiser : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Switches the type pf spectrum info processing depending on settings.
+    /// </summary>
+    /// <param name="pSpectrumInfo">Spectrum info process.</param>
+    /// <returns>Array contraining band values.</returns>
     private float[] bandValues(SpectrumInfo pSpectrumInfo)
     {
         switch (bandValueDistribution)
@@ -87,6 +96,10 @@ public class CreateBoxVisualiser : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculate width and spacing in which the boxes should be instantiated.
+    /// </summary>
+    /// <param name="pBoxAmount">Amount of boxes that should be instantiated.</param>
     private void calculateStepsAndSize(int pBoxAmount)
     {
         spacing = Mathf.Clamp(spacing, 0, length / (pBoxAmount - 1));
@@ -95,6 +108,10 @@ public class CreateBoxVisualiser : MonoBehaviour
         stepSize = boxSize + spacing;
     }
 
+    /// <summary>
+    /// Instantiates boxes based on band values.
+    /// </summary>
+    /// <param name="pBandValues">Array of band values.</param>
     private void instantiateBoxes(float[] pBandValues)
     {
         if (boxes != null) return;
@@ -109,7 +126,10 @@ public class CreateBoxVisualiser : MonoBehaviour
         }
     }
 
-    private void positionBoxes(float[] pBandValues)
+    /// <summary>
+    /// Places the boxes based oon the step size.
+    /// </summary>
+    private void positionBoxes()
     {
         if (boxes == null) return;
 
@@ -119,6 +139,10 @@ public class CreateBoxVisualiser : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Scales the boxes based on the step size and band values.
+    /// </summary>
+    /// <param name="pBandValues"></param>
     private void scaleBoxes(float[] pBandValues)
     {
         if (boxes == null) return;
@@ -131,6 +155,7 @@ public class CreateBoxVisualiser : MonoBehaviour
         }
     }
 
+    /// <returns>The postion where the array of boxes should start.</returns>
     private float startingY()
     {
         return -length / 2 + boxSize / 2;
