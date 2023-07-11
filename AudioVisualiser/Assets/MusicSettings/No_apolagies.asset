@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpectrumRange: 2048
   AudioClip: {fileID: 8300000, guid: 4e6ad704afd57434d8d0b2e88c1ab3a1, type: 3}
-  inputBandRanges: 3c000000fa000000f4010000d0070000a00f000070170000204e0000
   useAutomaticBandRanges: 1
-  bandAmount: 6
+  bandAmount: 7
   division: 3
-  subdivideBands:
-  - {x: 2, y: 5}
-  - {x: 5, y: 4}
+  inputBandRanges: 3c000000fa000000f4010000d0070000a00f000070170000204e0000
+  subdivide: 1
   autoSubdivide: 1
-  center: 2
+  subdivideCenter: 2
   centerMultiplier: 5
+  subdivideWidth: 2
+  subdivideFalloff: 1
+  subdivideBands:
+  - {x: 1, y: 2}
+  - {x: 2, y: 3}
