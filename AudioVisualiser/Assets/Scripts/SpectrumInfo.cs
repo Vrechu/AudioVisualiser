@@ -21,7 +21,6 @@ public struct SpectrumInfo
 
     #region Band getters
 
-
     /// <summary>
     /// Calculates the average value of all frequency steps withtin the band.
     /// </summary>

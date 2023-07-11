@@ -9,7 +9,7 @@ public class BandMixEditor : Editor
     BandMixScriptableObject bandMix;
     public override void OnInspectorGUI()
     {
-       // base.OnInspectorGUI();
+        // base.OnInspectorGUI();
         bandMix = target as BandMixScriptableObject;
 
         bandMix.AudioClip = (AudioClip)EditorGUILayout.ObjectField("Audio clip", bandMix.AudioClip, typeof(AudioClip), true);
@@ -18,7 +18,7 @@ public class BandMixEditor : Editor
         spectrumRangeEditor();
         GUILayout.Space(10);
 
-        EditorGUILayout.IntField("Total bands",bandMix.BandBorders().Length + 1);
+        EditorGUILayout.IntField("Total bands", bandMix.BandBorders().Length + 1);
         GUILayout.Space(10);
 
         bandRangeEditor();
@@ -26,7 +26,7 @@ public class BandMixEditor : Editor
 
         subdivideEditor();
         GUILayout.Space(5);
-
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
     }
 
     private void spectrumRangeEditor()
@@ -57,7 +57,7 @@ public class BandMixEditor : Editor
 
     private bool isValid(int pNumber)
     {
-        if (pNumber >= 8192 || pNumber <= 64 ) return false;
+        if (pNumber >= 8192 || pNumber <= 64) return false;
 
         float number = pNumber;
         while (number > 2)
@@ -76,14 +76,13 @@ public class BandMixEditor : Editor
 
         if (bandMix.useAutomaticBandRanges)
         {
-            bandMix.bandAmount = (uint)EditorGUILayout.IntField("Base band amount",(int)bandMix.bandAmount);
+            bandMix.bandAmount = (uint)EditorGUILayout.IntField("Base band amount", (int)bandMix.bandAmount);
             bandMix.division = (uint)EditorGUILayout.IntField("Base band division", (int)bandMix.division);
         }
         else
         {
             SerializedProperty inputBaseRanges = serializedObject.FindProperty("inputBandRanges");
             EditorGUILayout.PropertyField(inputBaseRanges);
-            serializedObject.ApplyModifiedProperties();
         }
     }
 
@@ -106,7 +105,6 @@ public class BandMixEditor : Editor
         {
             SerializedProperty subdivideBands = serializedObject.FindProperty("subdivideBands");
             EditorGUILayout.PropertyField(subdivideBands);
-            serializedObject.ApplyModifiedProperties();
         }
     }
 }
